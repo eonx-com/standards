@@ -2,6 +2,10 @@
 <ruleset name="eoneopay">
     <description>EoneoPay coding standards</description>
 
+    <!-- Define output -->
+    <arg name="tab-width" value="4"/>
+    <arg name="report-full"/>
+
     <!-- Import PSR1/2 as base -->
     <rule ref="PSR1"/>
     <rule ref="PSR2"/>

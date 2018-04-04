@@ -8,26 +8,23 @@
   "license": "BSD",
   "type": "library",
   "require": {
-    "php": ">=7.1",
-    "phpmd/phpmd" : "^2.6",
-    "phpstan/phpstan": "^0.9",
-    "phpunit/phpunit": "^7.0",
-    "sebastian/phpcpd": "^4.0",
-    "squizlabs/php_codesniffer": "3.*"
+    "php": ">=5.6"
   },
   "suggest": {
-    "brianium/paratest": "For running unit tests in parallel",
-    "ext-xdebug": "To calculate code coverage"
+    "brianium/paratest": "Run unit tests in parallel",
+    "ext-xdebug": "Calculate code coverage of unit tests",
+    "phpmd/phpmd": "Check coding best practices",
+    "phpstan/phpstan": "Static analysis of code to detect potential errors",
+    "phpunit/phpunit": "Run unit tests",
+    "sebastian/phpcpd": "Detect code duplication",
+    "squizlabs/php_codesniffer": "Check code style"
   },
   "bin": [
-    "lctools"
+    "es"
   ],
   "minimum-stability": "stable",
   "prefer-stable": true,
   "config": {
-    "platform": {
-      "php": "7.1.0"
-    },
     "optimize-autoloader": true
   }
 }

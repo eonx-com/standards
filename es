@@ -4,7 +4,7 @@
 PATHS=app,src,tests
 
 ########## PHP COPY/PASTE DETECTOR CONFIGURATION ##########
-# Whether or not to run phpstan as part of lctools, won't run if binary/vendor package is missing
+# Whether or not to run php copy/paste detector, will run if phpcpd binary is found
 PHPCPD_ENABLED=true
 # The minimum number of lines which need to be duplicated to count as copy/paste
 PHPCPD_MIN_LINES=5
@@ -12,25 +12,25 @@ PHPCPD_MIN_LINES=5
 PHPCPD_MIN_TOKENS=70
 
 ########## PHP CODE SNIFFER CONFIGURATION ##########
-# Whether or not to run phpstan as part of lctools, won't run if binary/vendor package is missing
+# Whether or not to run php code sniffer, will run if phpcs binary is found
 PHPCS_ENABLED=true
 # The standards to compare code against, will be ignored if phpcs.xml exists
 PHPCS_STANDARDS=PSR1,PSR2
 
 ########## PHP MESS DETECTOR CONFIGURATION ##########
-# Whether or not to run phpstan as part of lctools, won't run if binary/vendor package is missing
+# Whether or not to run php mess destector, will run if phpmd binary is found
 PHPMD_ENABLED=true
 # The rulesets to use to determine issues, will be ignored if phpmd.xml exists
 PHPMD_RULESETS=cleancode,codesize,controversial,design,naming,unusedcode
 
 ########## PHPSTAN CONFIGURATION ##########
-# Whether or not to run phpstan as part of lctools, won't run if binary/vendor package is missing
+# Whether or not to run phpstan, will run if phpstan binary is found
 PHPSTAN_ENABLED=true
 # The reporting level, 1 = loose, 7 = strict
 PHPSTAN_REPORTING_LEVEL=7
 
 ########## PHPUNIT CONFIGURATION ##########
-# Whether or not to run phpunit as part of lctools, won't run if binary/vendor package is missing
+# Whether or not to run phpunit, will run if paratest or phpunit binary is found
 PHPUNIT_ENABLED=true
 # Whether or not to enable code coverage checks
 PHPUNIT_ENABLE_CODE_COVERAGE=true
@@ -81,41 +81,19 @@ results () {
     fi
 }
 
-# Prefer config file
-if [ -f "lctools.cfg" ]; then
+# Import config if it exists
+if [ -f "standards.cfg" ]; then
     set -a
-    source lctools.cfg
+    source standards.cfg
     set +a
+fi
 
-    # If paths aren't specified, abort
-    if [[ -z ${PATHS} ]]; then
-        echo "Configuration file doesn't contain PATHS value"
-        echo "PATHS=<path>,<path>,..."
-        exit 1
-    fi
+resolve_paths ${PATHS}
 
-    resolve_paths ${PATHS}
-
-    if [ ${#checks[@]} -lt 1 ]; then
-        echo "Paths specfiied in configuration file are invalid or could not be found"
-        echo "PATHS=<path>,<path>,..."
-        exit 1
-    fi
-else
-    # If no directories are passed, fail
-    if [[ ! -z ${@} ]]; then
-        echo "No parameters passed"
-        echo "Usage: lctools <path>,<path>,..."
-        exit 1
-    fi
-
-    resolve_paths ${@}
-
-    if [ ${#checks[@]} -lt 1 ]; then
-        echo "No valid paths found in parameters"
-        echo "Usage: lctools <path>,<path>,..."
-        exit 1
-    fi
+if [ ${#checks[@]} -lt 1 ]; then
+    echo "Paths specfiied in configuration file are invalid or could not be found"
+    echo "PATHS=<path>,<path>,..."
+    exit 1
 fi
 
 # Combine directories into a single variable
@@ -138,7 +116,7 @@ if ${PHPCS_ENABLED}; then
     if [ ${?} -eq 0 ]; then
         echo "Running php code sniffer..."
         if [ -f phpcs.xml ]; then
-            results ${executable} --colors
+            results ${executable} --colors ${checks}
         else
             results ${executable} --standard=${PHPCS_STANDARDS} --colors --report=full ${checks}
         fi

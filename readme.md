@@ -37,7 +37,7 @@ It's recommended you also install the following extensions for PHP.
 
 You can simply run `es` from the vendor directory to check your code base, any packages which are installed will be run automatically.
 
-    php vendor/bin/es
+    bash vendor/bin/es
     
 Any php files in the `app/`, `src/` or `tests/` directories of your application or library will be checked by default.
 
@@ -50,7 +50,7 @@ You can fine tune the configuration by adding an `standards.cfg` file to the roo
 PATHS=app,src,tests
 
 ########## PHP COPY/PASTE DETECTOR CONFIGURATION ##########
-# Whether or not to run phpstan as part of lctools, won't run if binary/vendor package is missing
+# Whether or not to run php copy/paste detector, will run if phpcpd binary is found
 PHPCPD_ENABLED=true
 # The minimum number of lines which need to be duplicated to count as copy/paste
 PHPCPD_MIN_LINES=5
@@ -58,25 +58,25 @@ PHPCPD_MIN_LINES=5
 PHPCPD_MIN_TOKENS=70
 
 ########## PHP CODE SNIFFER CONFIGURATION ##########
-# Whether or not to run phpstan as part of lctools, won't run if binary/vendor package is missing
+# Whether or not to run php code sniffer, will run if phpcs binary is found
 PHPCS_ENABLED=true
 # The standards to compare code against, will be ignored if phpcs.xml exists
 PHPCS_STANDARDS=vendor/eoneopay/standards/php-code-sniffer/EoneoPay
 
 ########## PHP MESS DETECTOR CONFIGURATION ##########
-# Whether or not to run phpstan as part of lctools, won't run if binary/vendor package is missing
+# Whether or not to run php mess destector, will run if phpmd binary is found
 PHPMD_ENABLED=true
 # The rulesets to use to determine issues, will be ignored if phpmd.xml exists
 PHPMD_RULESETS=cleancode,codesize,controversial,design,naming,unusedcode
 
 ########## PHPSTAN CONFIGURATION ##########
-# Whether or not to run phpstan as part of lctools, won't run if binary/vendor package is missing
+# Whether or not to run phpstan, will run if phpstan binary is found
 PHPSTAN_ENABLED=true
 # The reporting level, 1 = loose, 7 = strict
 PHPSTAN_REPORTING_LEVEL=7
 
 ########## PHPUNIT CONFIGURATION ##########
-# Whether or not to run phpunit as part of lctools, won't run if binary/vendor package is missing
+# Whether or not to run phpunit, will run if paratest or phpunit binary is found
 PHPUNIT_ENABLED=true
 # Whether or not to enable code coverage checks
 PHPUNIT_ENABLE_CODE_COVERAGE=true

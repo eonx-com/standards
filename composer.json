@@ -1,0 +1,33 @@
+{
+  "name": "eoneopay/standards",
+  "description": "Library for enforcing EoneoPay coding standards against a code base",
+  "keywords": [
+    "eoneopay",
+    "standards"
+  ],
+  "license": "BSD",
+  "type": "library",
+  "require": {
+    "php": ">=7.1",
+    "phpmd/phpmd" : "^2.6",
+    "phpstan/phpstan": "^0.9",
+    "phpunit/phpunit": "^7.0",
+    "sebastian/phpcpd": "^4.0",
+    "squizlabs/php_codesniffer": "3.*"
+  },
+  "suggest": {
+    "brianium/paratest": "For running unit tests in parallel",
+    "ext-xdebug": "To calculate code coverage"
+  },
+  "bin": [
+    "lctools"
+  ],
+  "minimum-stability": "stable",
+  "prefer-stable": true,
+  "config": {
+    "platform": {
+      "php": "7.1.0"
+    },
+    "optimize-autoloader": true
+  }
+}

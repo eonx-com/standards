@@ -1,45 +1,45 @@
 #!/bin/bash
 
 # Comma separated paths to files to check, absolute or relative to working directory
-PATHS=app,src,tests
+PATHS=${PATHS:=app,src,tests}
 
 ########## PHP COPY/PASTE DETECTOR CONFIGURATION ##########
 # Whether or not to run php copy/paste detector, will run if phpcpd binary is found
-PHPCPD_ENABLED=true
+PHPCPD_ENABLED=${PHPCPD_ENABLED:=true}
 # The minimum number of lines which need to be duplicated to count as copy/paste
-PHPCPD_MIN_LINES=5
+PHPCPD_MIN_LINES=${PHPCPD_MIN_LINES:=5}
 # The minimum number of duplicated tokens within a line to count as copy/paste
-PHPCPD_MIN_TOKENS=70
+PHPCPD_MIN_TOKENS=${PHPCPD_MIN_TOKENS:=70}
 
 ########## PHP CODE SNIFFER CONFIGURATION ##########
 # Whether or not to run php code sniffer, will run if phpcs binary is found
-PHPCS_ENABLED=true
+PHPCS_ENABLED=${PHPCS_ENABLED:=true}
 # The standards to compare code against, will be ignored if phpcs.xml exists
-PHPCS_STANDARDS=vendor/eoneopay/standards/php-code-sniffer/EoneoPay
+PHPCS_STANDARDS=${PHPCS_STANDARDS:=vendor/eoneopay/standards/php-code-sniffer/EoneoPay}
 
 ########## PHP MESS DETECTOR CONFIGURATION ##########
 # Whether or not to run php mess destector, will run if phpmd binary is found
-PHPMD_ENABLED=true
+PHPMD_ENABLED=${PHPMD_ENABLED:=true}
 # The rulesets to use to determine issues, will be ignored if phpmd.xml exists
-PHPMD_RULESETS=cleancode,codesize,controversial,design,naming,unusedcode
+PHPMD_RULESETS=${PHPMD_RULESETS:=cleancode,codesize,controversial,design,naming,unusedcode}
 
 ########## PHPSTAN CONFIGURATION ##########
 # Whether or not to run phpstan, will run if phpstan binary is found
-PHPSTAN_ENABLED=true
+PHPSTAN_ENABLED=${PHPSTAN_ENABLED:=true}
 # The reporting level, 1 = loose, 7 = strict
-PHPSTAN_REPORTING_LEVEL=7
+PHPSTAN_REPORTING_LEVEL=${PHPSTAN_REPORTING_LEVEL:=7}
 
 ########## PHPUNIT CONFIGURATION ##########
 # Whether or not to run phpunit, will run if paratest or phpunit binary is found
-PHPUNIT_ENABLED=true
+PHPUNIT_ENABLED=${PHPUNIT_ENABLED:=true}
 # Whether or not to enable code coverage checks
-PHPUNIT_ENABLE_CODE_COVERAGE=true
+PHPUNIT_ENABLE_CODE_COVERAGE=${PHPUNIT_ENABLE_CODE_COVERAGE:=true}
 # The minimum percentage of coverage to have, will be ignored if coverage check is disabled
-PHPUNIT_COVERAGE_MINIMUM_LEVEL=90
+PHPUNIT_COVERAGE_MINIMUM_LEVEL=${PHPUNIT_COVERAGE_MINIMUM_LEVEL:=90}
 # The path to output junit parseable log file, can be relative, will be ignored if left blank
-PHPUNIT_JUNIT_LOG_PATH=
+PHPUNIT_JUNIT_LOG_PATH=${PHPUNIT_JUNIT_LOG_PATH:=}
 # The directory containing tests, will be ignored it phpunit.xml exists in working directory
-PHPUNIT_TEST_DIRECTORY=tests
+PHPUNIT_TEST_DIRECTORY=${PHPUNIT_TEST_DIRECTORY:=tests}
 
 ### DO NOT EDIT BELOW THIS LINE ###
 

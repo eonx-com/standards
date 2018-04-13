@@ -14,22 +14,8 @@ namespace PHP_CodeSniffer\Standards\EoneoPay\Sniffs\Classes;
 use PHP_CodeSniffer\Files\File;
 use PHP_CodeSniffer\Sniffs\Sniff;
 
-class StrictDeclarationSniff implements Sniff
+class StrictDeclarationFormatSniff implements Sniff
 {
-    /**
-     * The phpcs file instance
-     *
-     * @var \PHP_CodeSniffer\Files\File
-     */
-    private $phpcsFile;
-
-    /**
-     * The tokens from the file
-     *
-     * @var array
-     */
-    private $tokens;
-
     /**
      * Processes this test, when one of its tokens is encountered
      *
@@ -40,39 +26,41 @@ class StrictDeclarationSniff implements Sniff
      */
     public function process(File $phpcsFile, $stackPtr)
     {
-        // Capture the file
-        $this->phpcsFile = $phpcsFile;
-
         // Get tokens
-        $this->tokens = $phpcsFile->getTokens();
+        $tokens = $phpcsFile->getTokens();
 
-        // From opening tag, find declaration
+        // If declaration doesn't exist, skip
         $declarationPtr = $phpcsFile->findNext(T_DECLARE, $stackPtr);
         if (!\is_int($declarationPtr)) {
-            $this->throwError('Strict type declaration not found in file', $stackPtr, 'MissingDeclaration');
-
             return;
         }
 
         /** @var int $declarationPtr */
-        $openingTag = $this->tokens[$stackPtr];
-        $declaration = $this->tokens[$declarationPtr];
+        $openingTag = $tokens[$stackPtr];
+        $declaration = $tokens[$declarationPtr];
+
+        // If not a strict type declaration, skip
+        $declarationType = $tokens[(int)$phpcsFile->findNext(T_STRING, $declarationPtr)]['content'] ?? '';
+        if (\mb_strtolower($declarationType) !== 'strict_types') {
+            return;
+        }
 
         // Check that the declaration immediately follows the opening tag
         if ($declaration['line'] !== $openingTag['line'] + 1) {
-            $this->throwError(
+            $phpcsFile->addError(
                 'Strict type declaration must be on the line immediately following the opening tag',
-                $stackPtr
+                $stackPtr,
+                'StrictDeclarationFormat'
             );
-
-            return;
         }
 
         // Ensure there are no leading spaces
         if ($declaration['column'] !== 1) {
-            $this->throwError('Strict type declaration must be on it\'s own line with no leading spaces', $stackPtr);
-
-            return;
+            $phpcsFile->addError(
+                'Strict type declaration must be on a new line with no leading whitespace',
+                $stackPtr,
+                'StrictDeclarationFormat'
+            );
         }
 
         // Get pointers
@@ -84,12 +72,12 @@ class StrictDeclarationSniff implements Sniff
         $semicolonPtr = $phpcsFile->findNext(T_SEMICOLON, (int)$closeParenthesisPtr);
 
         // Get data
-        $openParenthesis = $this->tokens[(int)$openParenthesisPtr];
-        $string = $this->tokens[(int)$stringPtr];
-        $equals = $this->tokens[(int)$equalsPtr];
-        $value = $this->tokens[(int)$valuePtr];
-        $closeParenthesis = $this->tokens[(int)$closeParenthesisPtr];
-        $semicolon = $this->tokens[(int)$semicolonPtr];
+        $openParenthesis = $tokens[(int)$openParenthesisPtr];
+        $string = $tokens[(int)$stringPtr];
+        $equals = $tokens[(int)$equalsPtr];
+        $value = $tokens[(int)$valuePtr];
+        $closeParenthesis = $tokens[(int)$closeParenthesisPtr];
+        $semicolon = $tokens[(int)$semicolonPtr];
 
         // Ensure declaration is exactly as expected
         if (!\is_int($openParenthesisPtr) ||
@@ -113,7 +101,11 @@ class StrictDeclarationSniff implements Sniff
             $closeParenthesis['column'] !== $value['column'] + $value['length'] ||
             $semicolon['column'] !== $closeParenthesis['column'] + $closeParenthesis['length']
         ) {
-            $this->throwError('Strict type declaration invalid, must be `declare(strict_types=1);`', $stackPtr);
+            $phpcsFile->addError(
+                'Strict type declaration invalid, the only acceptable format is `declare(strict_types=1);`',
+                $stackPtr,
+                'StrictDeclarationFormat'
+            );
 
             return;
         }
@@ -127,23 +119,5 @@ class StrictDeclarationSniff implements Sniff
     public function register()
     {
         return [T_OPEN_TAG];
-    }
-
-    /**
-     * Throw an error
-     *
-     * @param string $message The message to send
-     * @param int $pointer The pointer position
-     * @param string $type The message type
-     *
-     * @return void
-     */
-    private function throwError($message, $pointer, $type = null)
-    {
-        $this->phpcsFile->addError(
-            $message,
-            $pointer,
-            (string)$type ?: 'InvalidDeclaration'
-        );
     }
 }

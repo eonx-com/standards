@@ -1,5 +1,5 @@
 <?xml version="1.0"?>
-<ruleset name="eoneopay">
+<ruleset name="EoneoPay">
     <description>EoneoPay coding standards</description>
 
     <!-- Define output -->

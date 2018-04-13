@@ -40,7 +40,7 @@ class RequireStrictDeclarationSniff implements Sniff
 
         // Cycle through declarations and attempt to find strict_types declaration
         $pointer = $stackPtr;
-        while ($pointer !== false) {
+        while (false !== $pointer) {
             $stringPtr = $phpcsFile->findNext(T_STRING, $pointer);
 
             // If string isn't found, skip
@@ -55,7 +55,7 @@ class RequireStrictDeclarationSniff implements Sniff
                 '';
 
             // If not strict, skip
-            if (\mb_strtolower($declarationType) !== 'strict_types') {
+            if ('strict_types' !== \mb_strtolower($declarationType)) {
                 $pointer = $phpcsFile->findNext(T_DECLARE, $stringPtr);
                 continue;
             }
@@ -65,7 +65,7 @@ class RequireStrictDeclarationSniff implements Sniff
         }
 
         // If not found, error out
-        if ($pointer === false) {
+        if (false === $pointer) {
             $phpcsFile->addError('Strict type declaration not found in file', $stackPtr, 'RequireStrictDeclaration');
 
             return;

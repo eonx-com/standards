@@ -24,3 +24,6 @@ if (null === $null) {}
 
 if ($true === true) {}
 if (true === $true) {}
+
+if ($static === self::STATIC) {}
+if (self::STATIC === $static) {}

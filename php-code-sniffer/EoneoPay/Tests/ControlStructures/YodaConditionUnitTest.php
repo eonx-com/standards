@@ -34,7 +34,9 @@ class YodaConditionUnitTest extends AbstractSniffUnitTest
             22 => 1,
             23 => 0,
             25 => 1,
-            26 => 0
+            26 => 0,
+            28 => 1,
+            29 => 0
         ];
     }
 

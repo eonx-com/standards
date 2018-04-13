@@ -41,12 +41,12 @@ class StrictDeclarationFormatSniff implements Sniff
 
         // If not a strict type declaration, skip
         $declarationType = $tokens[(int)$phpcsFile->findNext(T_STRING, $declarationPtr)]['content'] ?? '';
-        if (\mb_strtolower($declarationType) !== 'strict_types') {
+        if ('strict_types' !== \mb_strtolower($declarationType)) {
             return;
         }
 
         // Check that the declaration immediately follows the opening tag
-        if ($declaration['line'] !== $openingTag['line'] + 1) {
+        if ($openingTag['line'] + 1 !== $declaration['line']) {
             $phpcsFile->addError(
                 'Strict type declaration must be on the line immediately following the opening tag',
                 $stackPtr,
@@ -55,7 +55,7 @@ class StrictDeclarationFormatSniff implements Sniff
         }
 
         // Ensure there are no leading spaces
-        if ($declaration['column'] !== 1) {
+        if (1 !== $declaration['column']) {
             $phpcsFile->addError(
                 'Strict type declaration must be on a new line with no leading whitespace',
                 $stackPtr,
@@ -86,20 +86,20 @@ class StrictDeclarationFormatSniff implements Sniff
             !\is_int($valuePtr) ||
             !\is_int($closeParenthesisPtr) ||
             !\is_int($semicolonPtr) ||
-            $string['content'] !== 'strict_types' ||
-            $value['content'] !== '1' ||
-            $openParenthesis['line'] !== $declaration['line'] ||
-            $string['line'] !== $declaration['line'] ||
-            $equals['line'] !== $declaration['line'] ||
-            $value['line'] !== $declaration['line'] ||
-            $closeParenthesis['line'] !== $declaration['line'] ||
-            $semicolon['line'] !== $declaration['line'] ||
-            $openParenthesis['column'] !== $declaration['column'] + $declaration['length'] ||
-            $string['column'] !== $openParenthesis['column'] + $openParenthesis['length'] ||
-            $equals['column'] !== $string['column'] + $string['length'] ||
-            $value['column'] !== $equals['column'] + $equals['length'] ||
-            $closeParenthesis['column'] !== $value['column'] + $value['length'] ||
-            $semicolon['column'] !== $closeParenthesis['column'] + $closeParenthesis['length']
+            'strict_types' !== $string['content'] ||
+            '1' !== $value['content'] ||
+            $declaration['line'] !== $openParenthesis['line'] ||
+            $declaration['line'] !== $string['line'] ||
+            $declaration['line'] !== $equals['line'] ||
+            $declaration['line'] !== $value['line'] ||
+            $declaration['line'] !== $closeParenthesis['line'] ||
+            $declaration['line'] !== $semicolon['line'] ||
+            $declaration['column'] + $declaration['length'] !== $openParenthesis['column'] ||
+            $openParenthesis['column'] + $openParenthesis['length'] !== $string['column'] ||
+            $string['column'] + $string['length'] !== $equals['column'] ||
+            $equals['column'] + $equals['length'] !== $value['column'] ||
+            $value['column'] + $value['length'] !== $closeParenthesis['column'] ||
+            $closeParenthesis['column'] + $closeParenthesis['length'] !== $semicolon['column']
         ) {
             $phpcsFile->addError(
                 'Strict type declaration invalid, the only acceptable format is `declare(strict_types=1);`',

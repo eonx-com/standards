@@ -37,7 +37,7 @@ class YodaConditionSniff implements Sniff
 
         // Loop through comparisons in statement
         $statementPtr = $openParenthesisPtr;
-        while ($statementPtr !== false && $statementPtr < $closeParenthesisPtr) {
+        while (false !== $statementPtr && $statementPtr < $closeParenthesisPtr) {
             // Process comparison
             $dividerPtr = $phpcsFile->findNext([T_BOOLEAN_AND, T_BOOLEAN_OR], $statementPtr);
 
@@ -76,13 +76,12 @@ class YodaConditionSniff implements Sniff
                 $dividerPtr
             );
 
-            // If no tokens were found, or they're identical ($variable === $variable), skip
-            if ($leftTokens === $rightTokens || !\count($leftTokens) || !\count($rightTokens)) {
+            // If tokens are identical (e.g. $variable === $variable), skip
+            if ($leftTokens === $rightTokens) {
                 $statementPtr = $dividerPtr + 1;
                 continue;
             }
 
-            // Process rules to ensure yoda isn't used where possible
             // If there is a variable on the left but not the right, throw error
             if (\array_key_exists(T_VARIABLE, $leftTokens) && !\array_key_exists(T_VARIABLE, $rightTokens)) {
                 $phpcsFile->addError(
@@ -168,16 +167,8 @@ class YodaConditionSniff implements Sniff
         $found = [];
 
         $pointer = $start + 1;
-        while ($pointer !== false && $pointer < $end) {
-            $tokenPtr = $phpcsFile->findNext([
-                T_CONSTANT_ENCAPSED_STRING,
-                T_FALSE,
-                T_FUNCTION,
-                T_LNUMBER,
-                T_NULL,
-                T_TRUE,
-                T_VARIABLE
-            ], $pointer, $end - 1);
+        while (false !== $pointer && $pointer < $end) {
+            $tokenPtr = $phpcsFile->findNext([T_VARIABLE], $pointer, $end - 1);
 
             // If no more tokens are found, return
             if (!\is_int($tokenPtr)) {

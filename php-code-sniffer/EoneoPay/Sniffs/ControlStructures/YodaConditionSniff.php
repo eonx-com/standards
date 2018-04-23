@@ -1,7 +1,7 @@
 <?php
 
 /**
- * Checks the class use yoda conditions to evaluate conditional expressions
+ * Checks the class does not use yoda conditions to evaluate conditional expressions
  *
  * @author Scott Dawson <scott@loyaltycorp.com.au>
  * @copyright 2018 Loyalty Corp Pty Ltd (ABN 39 615 958 873)
@@ -82,11 +82,11 @@ class YodaConditionSniff implements Sniff
                 continue;
             }
 
-            // If there is a variable on the left but not the right, throw error
-            if (\array_key_exists(T_VARIABLE, $leftTokens) && !\array_key_exists(T_VARIABLE, $rightTokens)) {
+            // If there is a variable on the right but not the left, throw error
+            if (!\array_key_exists(T_VARIABLE, $leftTokens) && \array_key_exists(T_VARIABLE, $rightTokens)) {
                 $phpcsFile->addError(
-                    'Used must yoda conditions be when comparing a variable against a constant or method. Hmmmmmm',
-                    $leftTokens[T_VARIABLE],
+                    'Yoda conditions must not be used',
+                    $rightTokens[T_VARIABLE],
                     'YodaConditions'
                 );
             }

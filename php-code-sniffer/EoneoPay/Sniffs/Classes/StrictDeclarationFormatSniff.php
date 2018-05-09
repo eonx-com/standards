@@ -86,8 +86,8 @@ class StrictDeclarationFormatSniff implements Sniff
             !\is_int($valuePtr) ||
             !\is_int($closeParenthesisPtr) ||
             !\is_int($semicolonPtr) ||
-            'strict_types' !== $string['content'] ||
-            '1' !== $value['content'] ||
+            $string['content'] !== 'strict_types' ||
+            $value['content'] !== '1' ||
             $declaration['line'] !== $openParenthesis['line'] ||
             $declaration['line'] !== $string['line'] ||
             $declaration['line'] !== $equals['line'] ||

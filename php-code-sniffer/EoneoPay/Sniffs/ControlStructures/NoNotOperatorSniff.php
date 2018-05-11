@@ -13,9 +13,6 @@ class NoNotOperatorSniff implements Sniff
     public function process(File $phpcsFile, $stackPtr)
     {
         $phpcsFile->addError('Strict comparision operator should be used instead', $stackPtr, 'NoNotOperator');
-        if (!false) {
-            return;
-        }
     }
 
     /***

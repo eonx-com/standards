@@ -41,12 +41,12 @@ class StrictDeclarationFormatSniff implements Sniff
 
         // If not a strict type declaration, skip
         $declarationType = $tokens[(int)$phpcsFile->findNext(T_STRING, $declarationPtr)]['content'] ?? '';
-        if ('strict_types' !== \mb_strtolower($declarationType)) {
+        if (\mb_strtolower($declarationType) !== 'strict_types') {
             return;
         }
 
         // Check that the declaration immediately follows the opening tag
-        if ($openingTag['line'] + 1 !== $declaration['line']) {
+        if ($declaration['line'] !== $openingTag['line'] + 1) {
             $phpcsFile->addError(
                 'Strict type declaration must be on the line immediately following the opening tag',
                 $stackPtr,
@@ -55,7 +55,7 @@ class StrictDeclarationFormatSniff implements Sniff
         }
 
         // Ensure there are no leading spaces
-        if (1 !== $declaration['column']) {
+        if ($declaration['column'] !== 1) {
             $phpcsFile->addError(
                 'Strict type declaration must be on a new line with no leading whitespace',
                 $stackPtr,
@@ -86,8 +86,8 @@ class StrictDeclarationFormatSniff implements Sniff
             !\is_int($valuePtr) ||
             !\is_int($closeParenthesisPtr) ||
             !\is_int($semicolonPtr) ||
-            'strict_types' !== $string['content'] ||
-            '1' !== $value['content'] ||
+            $string['content'] !== 'strict_types' ||
+            $value['content'] !== '1' ||
             $declaration['line'] !== $openParenthesis['line'] ||
             $declaration['line'] !== $string['line'] ||
             $declaration['line'] !== $equals['line'] ||

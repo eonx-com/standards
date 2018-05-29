@@ -62,6 +62,8 @@ PHPCPD_MIN_TOKENS=70
 PHPCS_ENABLED=true
 # The standards to compare code against, will be ignored if phpcs.xml exists
 PHPCS_STANDARDS=vendor/eoneopay/standards/php-code-sniffer/EoneoPay
+# Whether to show the code sniffs name on report output
+PHPCS_SHOW_SNIFF_NAME=true
 
 ########## PHP MESS DETECTOR CONFIGURATION ##########
 # Whether or not to run php mess destector, will run if phpmd binary is found

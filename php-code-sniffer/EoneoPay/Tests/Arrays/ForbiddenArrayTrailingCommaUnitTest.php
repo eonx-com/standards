@@ -1,10 +1,11 @@
 <?php
+declare(strict_types=1);
 
-namespace PHP_CodeSniffer\Standards\EoneoPay\Tests\Classes;
+namespace Tests\EoneoPay\Standards\CodeSniffer\Arrays;
 
 use PHP_CodeSniffer\Tests\Standards\AbstractSniffUnitTest;
 
-class StrictDeclarationFormatUnitTest extends AbstractSniffUnitTest
+class ForbiddenArrayTrailingCommaUnitTest extends AbstractSniffUnitTest
 {
     /**
      * Returns the lines where errors should occur.
@@ -17,10 +18,9 @@ class StrictDeclarationFormatUnitTest extends AbstractSniffUnitTest
     protected function getErrorList()
     {
         return [
-            1 => 2
+            5 => 1
         ];
     }
-
 
     /**
      * Returns the lines where warnings should occur.

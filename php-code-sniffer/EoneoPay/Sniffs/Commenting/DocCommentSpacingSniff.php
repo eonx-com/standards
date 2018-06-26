@@ -9,7 +9,7 @@ declare(strict_types=1);
  * @license https://github.com/loyaltycorp/standards/blob/master/licence BSD Licence
  */
 
-namespace PHP_CodeSniffer\Standards\EoneoPay\Sniffs\Arrays;
+namespace PHP_CodeSniffer\Standards\EoneoPay\Sniffs\Commenting;
 
 use PHP_CodeSniffer\Files\File;
 use PHP_CodeSniffer\Sniffs\Sniff;
@@ -29,16 +29,6 @@ class DocCommentSpacingSniff implements Sniff
      * @var mixed[]
      */
     private $tokens;
-
-    /**
-     * @return mixed[]
-     */
-    public function register(): array
-    {
-        return [
-            T_DOC_COMMENT_OPEN_TAG,
-        ];
-    }
 
     /**
      * Processes this test, when one of its tokens is encountered.
@@ -87,6 +77,37 @@ class DocCommentSpacingSniff implements Sniff
     }
 
     /**
+     * @return mixed[]
+     */
+    public function register(): array
+    {
+        return [
+            T_DOC_COMMENT_OPEN_TAG,
+        ];
+    }
+
+    /**
+     * Check lines between different annotations.
+     *
+     * @param \SlevomatCodingStandard\Helpers\Annotation $annotation
+     * @param int $linesCount
+     *
+     * @return void
+     */
+    private function checkDifferentAnnotations(Annotation $annotation, $linesCount)
+    {
+        if ($linesCount === 1) {
+            return;
+        }
+
+        $this->phpcsFile->addError(
+            \sprintf('Expected 1 lines between different annotations types, found %d.', $linesCount),
+            $annotation->getStartPointer(),
+            'LineBetweenDifferentTags'
+        );
+    }
+
+    /**
      * Check lines after last content.
      *
      * @param int $closePointer
@@ -110,100 +131,6 @@ class DocCommentSpacingSniff implements Sniff
             $lastPointer,
             'LinesAfterLastContent'
         );
-    }
-
-    /**
-     * Check lines between description and first annotation.
-     *
-     * @param int $startPointer
-     * @param int $endPointer
-     * @param null|\SlevomatCodingStandard\Helpers\Annotation $firstAnnotation
-     *
-     * @return void
-     *
-     * @throws \SlevomatCodingStandard\Helpers\EmptyFileException
-     */
-    private function checkLinesBetweenDescriptionAndFirstAnnotation(
-        int $startPointer,
-        int $endPointer,
-        ?Annotation $firstAnnotation
-    ) {
-        if ($firstAnnotation === null || $startPointer === $firstAnnotation->getStartPointer()) {
-            return;
-        }
-
-        \preg_match('~(\\s+)$~', $this->tokens[$endPointer]['content'], $matches);
-
-        $lines = $matches[1] ?? '';
-        $lines .= TokenHelper::getContent(
-            $this->phpcsFile,
-            $endPointer + 1,
-            $firstAnnotation->getStartPointer() - 1
-        );
-
-        $linesCount = $this->countLines($lines);
-
-        if ($linesCount === 1) {
-            return;
-        }
-
-        $this->phpcsFile->addError(
-            \sprintf('Expected 1 lines between description and annotations, found %d.', $linesCount),
-            $firstAnnotation->getStartPointer(),
-            'LinesBetweenDescriptionAndFirstAnnotation'
-        );
-    }
-
-    /**
-     * Get first content end pointer.
-     *
-     * @param int $firstPointer
-     * @param int $openPointer
-     *
-     * @return int
-     */
-    private function getFirstContentEndPointer($firstPointer, $openPointer)
-    {
-        $endPointer = $actualPointer = $firstPointer;
-
-        do {
-            /** @var int $actualPointer */
-            $actualPointer = TokenHelper::findNextExcluding(
-                $this->phpcsFile,
-                [T_DOC_COMMENT_STAR, T_DOC_COMMENT_WHITESPACE],
-                $actualPointer + 1,
-                $this->tokens[$openPointer]['comment_closer'] + 1
-            );
-
-            if ($this->tokens[$actualPointer]['code'] !== T_DOC_COMMENT_STRING) {
-                break;
-            }
-
-            $endPointer = $actualPointer;
-        } while (true);
-
-        return $endPointer;
-    }
-
-    /**
-     * Get annotations.
-     *
-     * @param int $openPointer
-     *
-     * @return \SlevomatCodingStandard\Helpers\Annotation[]
-     */
-    private function getAnnotations($openPointer)
-    {
-        $annotations = \array_merge(
-            [],
-            ...\array_values(AnnotationHelper::getAnnotations($this->phpcsFile, $openPointer))
-        );
-
-        \uasort($annotations, function (Annotation $annotation1, Annotation $annotation2) {
-            return $annotation1->getStartPointer() <=> $annotation2->getEndPointer();
-        });
-
-        return $annotations;
     }
 
     /**
@@ -267,6 +194,48 @@ class DocCommentSpacingSniff implements Sniff
     }
 
     /**
+     * Check lines between description and first annotation.
+     *
+     * @param int $startPointer
+     * @param int $endPointer
+     * @param null|\SlevomatCodingStandard\Helpers\Annotation $firstAnnotation
+     *
+     * @return void
+     *
+     * @throws \SlevomatCodingStandard\Helpers\EmptyFileException
+     */
+    private function checkLinesBetweenDescriptionAndFirstAnnotation(
+        int $startPointer,
+        int $endPointer,
+        ?Annotation $firstAnnotation
+    ) {
+        if ($firstAnnotation === null || $startPointer === $firstAnnotation->getStartPointer()) {
+            return;
+        }
+
+        \preg_match('~(\\s+)$~', $this->tokens[$endPointer]['content'], $matches);
+
+        $lines = $matches[1] ?? '';
+        $lines .= TokenHelper::getContent(
+            $this->phpcsFile,
+            $endPointer + 1,
+            $firstAnnotation->getStartPointer() - 1
+        );
+
+        $linesCount = $this->countLines($lines);
+
+        if ($linesCount === 1) {
+            return;
+        }
+
+        $this->phpcsFile->addError(
+            \sprintf('Expected 1 lines between description and annotations, found %d.', $linesCount),
+            $firstAnnotation->getStartPointer(),
+            'LinesBetweenDescriptionAndFirstAnnotation'
+        );
+    }
+
+    /**
      * Check lines between same annotations.
      *
      * @param \SlevomatCodingStandard\Helpers\Annotation $annotation
@@ -288,24 +257,15 @@ class DocCommentSpacingSniff implements Sniff
     }
 
     /**
-     * Check lines between different annotations.
+     * Count lines in given contents.
      *
-     * @param \SlevomatCodingStandard\Helpers\Annotation $annotation
-     * @param int $linesCount
+     * @param string $contents
      *
-     * @return void
+     * @return int
      */
-    private function checkDifferentAnnotations(Annotation $annotation, $linesCount)
+    private function countLines($contents)
     {
-        if ($linesCount === 1) {
-            return;
-        }
-
-        $this->phpcsFile->addError(
-            \sprintf('Expected 1 lines between different annotations types, found %d.', $linesCount),
-            $annotation->getStartPointer(),
-            'LineBetweenDifferentTags'
-        );
+        return \max(\substr_count($contents, $this->phpcsFile->eolChar) - 1, 0);
     }
 
     /**
@@ -335,18 +295,6 @@ class DocCommentSpacingSniff implements Sniff
     }
 
     /**
-     * Count lines in given contents.
-     *
-     * @param string $contents
-     *
-     * @return int
-     */
-    private function countLines($contents)
-    {
-        return \max(\substr_count($contents, $this->phpcsFile->eolChar) - 1, 0);
-    }
-
-    /**
      * Get annotation name.
      *
      * @param \SlevomatCodingStandard\Helpers\Annotation $annotation
@@ -358,5 +306,57 @@ class DocCommentSpacingSniff implements Sniff
         $exploded = \explode('\\', $annotation->getName());
 
         return \reset($exploded);
+    }
+
+    /**
+     * Get annotations.
+     *
+     * @param int $openPointer
+     *
+     * @return \SlevomatCodingStandard\Helpers\Annotation[]
+     */
+    private function getAnnotations($openPointer)
+    {
+        $annotations = \array_merge(
+            [],
+            ...\array_values(AnnotationHelper::getAnnotations($this->phpcsFile, $openPointer))
+        );
+
+        \uasort($annotations, function (Annotation $annotation1, Annotation $annotation2) {
+            return $annotation1->getStartPointer() <=> $annotation2->getEndPointer();
+        });
+
+        return $annotations;
+    }
+
+    /**
+     * Get first content end pointer.
+     *
+     * @param int $firstPointer
+     * @param int $openPointer
+     *
+     * @return int
+     */
+    private function getFirstContentEndPointer($firstPointer, $openPointer)
+    {
+        $endPointer = $actualPointer = $firstPointer;
+
+        do {
+            /** @var int $actualPointer */
+            $actualPointer = TokenHelper::findNextExcluding(
+                $this->phpcsFile,
+                [T_DOC_COMMENT_STAR, T_DOC_COMMENT_WHITESPACE],
+                $actualPointer + 1,
+                $this->tokens[$openPointer]['comment_closer'] + 1
+            );
+
+            if ($this->tokens[$actualPointer]['code'] !== T_DOC_COMMENT_STRING) {
+                break;
+            }
+
+            $endPointer = $actualPointer;
+        } while (true);
+
+        return $endPointer;
     }
 }

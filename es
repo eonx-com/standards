@@ -185,12 +185,17 @@ if ${PHPUNIT_ENABLED}; then
         if [ ! -z ${phpunit_command+xxx} ]; then
             # If coverage is enabled, add it
             if ${PHPUNIT_ENABLE_CODE_COVERAGE}; then
-                phpunit_command="${phpunit_command} --coverage-text"
-            fi
+                # Prefer running with phpdbg
+                if [ ! -z $(which phpdbg) ]; then
+                    phpunit_command="$(command -v phpdbg) -qrr ${phpunit_command#php } --coverage-text"
+                else
+                    phpunit_command="${phpunit_command} --coverage-text"
+                fi
 
-            # If junit is enabled, add it
-            if [ ! -z ${PHPUNIT_JUNIT_LOG_PATH} ]; then
-                phpunit_command="${phpunit_command} --log-junit=${PHPUNIT_JUNIT_LOG_PATH}"
+                # If junit is enabled, add it
+                if [ ! -z ${PHPUNIT_JUNIT_LOG_PATH} ]; then
+                    phpunit_command="${phpunit_command} --log-junit=${PHPUNIT_JUNIT_LOG_PATH}"
+                fi
             fi
 
             # Run and capture result

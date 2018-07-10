@@ -16,6 +16,7 @@ use PHP_CodeSniffer\Files\File;
 use PHP_CodeSniffer\Standards\Squiz\Sniffs\Commenting\FunctionCommentSniff as SquizFunctionCommentSniff;
 use PHP_CodeSniffer\Util\Common;
 use PHP_CodeSniffer\Util\Tokens;
+use SlevomatCodingStandard\Helpers\SuppressHelper;
 
 class FunctionCommentSniff extends SquizFunctionCommentSniff
 {
@@ -441,7 +442,10 @@ class FunctionCommentSniff extends SquizFunctionCommentSniff
                             $errorCode = 'Scalar' . $errorCode;
                         }
 
-                        $phpcsFile->addError($error, $stackPtr, $errorCode, $data);
+                        $suppressName = 'EoneoPay.Commenting.FunctionComment' . $errorCode;
+                        if (SuppressHelper::isSniffSuppressed($phpcsFile, $stackPtr, $suppressName) === false) {
+                            $phpcsFile->addError($error, $stackPtr, $errorCode, $data);
+                        }
                     } else {
                         if ($typeHint !== $compareTypeHint
                             && $typeHint !== '?' . $compareTypeHint
@@ -585,7 +589,7 @@ class FunctionCommentSniff extends SquizFunctionCommentSniff
         }
     }
 
-/**
+    /**
      * Process the return comment of this function comment.
      *
      * @param \PHP_CodeSniffer\Files\File $phpcsFile The file being scanned.

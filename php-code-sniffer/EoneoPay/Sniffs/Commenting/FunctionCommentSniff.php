@@ -21,142 +21,16 @@ use SlevomatCodingStandard\Helpers\SuppressHelper;
 class FunctionCommentSniff extends SquizFunctionCommentSniff
 {
     /**
-     * PHPUnit test class prototypes
-     *
-     * @var mixed[]
-     */
-    protected static $testClassPrototypes = [
-        'PHPUnit_Framework_TestCase',
-        'PHPUnit\\Framework\\TestCase'
-    ];
-
-    /**
      * Cache for class parents and interfaces.
      *
      * @var mixed[]
      */
-    protected $parentsAndInterfaces;
-
-    /**
-     * Cache for test class methods indexed by stack pointer.
-     *
-     * @var mixed[]
-     */
-    protected $testClassMethods = [];
-
-    /**
-     * Cache for test classes indexed by stack pointer.
-     *
-     * @var mixed[]
-     */
-    protected $testClasses = [];
+    private $parentsAndInterfaces;
 
     /**
      * @var \PHP_CodeSniffer\Files\File
      */
     private $phpcsFile;
-
-    /**
-     * Get class parents and interfaces.
-     * Returns array of class and interface names or false if the class cannot be loaded.
-     *
-     * @return mixed[]|bool
-     *
-     * @throws \PHP_CodeSniffer\Exceptions\RuntimeException
-     */
-    public function getClassParentsAndInterfaces()
-    {
-        $phpcsFile = $this->phpcsFile;
-        $tokens = $phpcsFile->getTokens();
-        $nsStart = $phpcsFile->findNext(array(T_NAMESPACE), 0);
-        $class = '';
-
-        // Set the default return value.
-        $this->parentsAndInterfaces = false;
-
-        // Build the namespace.
-        if (false !== $nsStart) {
-            $nsEnd = $phpcsFile->findNext(array(T_SEMICOLON), $nsStart + 2);
-            for ($i = $nsStart + 2; $i < $nsEnd; $i++) {
-                $class .= $tokens[$i]['content'];
-            }
-            $class .= '\\';
-        } else {
-            $nsEnd = 0;
-        }
-
-        // Find the class/interface declaration.
-        $classPtr = $phpcsFile->findNext(array(T_CLASS, T_INTERFACE), $nsEnd);
-
-        if (false !== $classPtr) {
-            $class .= $phpcsFile->getDeclarationName($classPtr);
-
-            if (\class_exists($class) || \interface_exists($class)) {
-                $this->parentsAndInterfaces = \array_merge(\class_parents($class), \class_implements($class));
-            }
-        }
-
-        return $this->parentsAndInterfaces;
-    }
-
-    /**
-     * Check if a class is a PHPUnit test class.
-     *
-     * @param  int $stackPtr
-     *
-     * @return bool
-     *
-     * @throws \PHP_CodeSniffer\Exceptions\RuntimeException
-     */
-    public function isTestClass($stackPtr)
-    {
-        if (!\array_key_exists($stackPtr, $this->testClasses)) {
-            $this->testClasses[$stackPtr] = false;
-
-            $classes = $this->getClassParentsAndInterfaces();
-
-            if (false !== $classes) {
-                foreach ($classes as $class) {
-                    if (\in_array($class, self::$testClassPrototypes, true)) {
-                        $this->testClasses[$stackPtr] = true;
-                        break;
-                    }
-                }
-            }
-        }
-
-        return $this->testClasses[$stackPtr];
-    }
-
-    /**
-     * Check if a method is a PHPUnit test class method.
-     *
-     * @param int $stackPtr
-     *
-     * @return bool
-     *
-     * @throws \PHP_CodeSniffer\Exceptions\RuntimeException
-     * @throws \PHP_CodeSniffer\Exceptions\TokenizerException
-     */
-    public function isTestClassMethod($stackPtr)
-    {
-        if (!\array_key_exists($stackPtr, $this->testClassMethods)) {
-            $this->testClassMethods[$stackPtr] = false;
-            if ($this->isTestClass($stackPtr)) {
-                $props = $this->phpcsFile->getMethodProperties($stackPtr);
-
-                if ('public' === ($props['scope'] ?? null)
-                    && ($props['is_abstract'] ?? false) === false
-                    && ($props['is_closure'] ?? false) === false
-                    && \stripos($this->phpcsFile->getDeclarationName($stackPtr), 'test') === 0
-                ) {
-                    $this->testClassMethods[$stackPtr] = true;
-                }
-            }
-        }
-
-        return $this->testClassMethods[$stackPtr];
-    }
 
     /**
      * {@inheritdoc}
@@ -184,19 +58,14 @@ class FunctionCommentSniff extends SquizFunctionCommentSniff
             }
         }
 
-        if ($tokens[$commentEnd]['code'] !== T_DOC_COMMENT_CLOSE_TAG
-            && $tokens[$commentEnd]['code'] !== T_COMMENT
-        ) {
-            // [1] Added PHPUnit test class control for methods without doc comment.
-            if (!$this->isTestClassMethod($stackPtr)) {
-                $phpcsFile->addError('Missing function doc comment', $stackPtr, 'Missing');
-                $phpcsFile->recordMetric($stackPtr, 'Function has doc comment', 'no');
-            }
+        if ($tokens[$commentEnd]['code'] !== T_DOC_COMMENT_CLOSE_TAG && $tokens[$commentEnd]['code'] !== T_COMMENT) {
+            $phpcsFile->addError('Missing function doc comment', $stackPtr, 'Missing');
+            $phpcsFile->recordMetric($stackPtr, 'Function has doc comment', 'no');
 
             return;
-        } else {
-            $phpcsFile->recordMetric($stackPtr, 'Function has doc comment', 'yes');
         }
+
+        $phpcsFile->recordMetric($stackPtr, 'Function has doc comment', 'yes');
 
         if ($tokens[$commentEnd]['code'] === T_COMMENT) {
             $phpcsFile->addError('You must use "/**" style comments for a function comment', $stackPtr, 'WrongStyle');
@@ -717,7 +586,7 @@ class FunctionCommentSniff extends SquizFunctionCommentSniff
 
     }
 
-    /**
+/**
      * Process throws.
      *
      * @param \PHP_CodeSniffer\Files\File $phpcsFile
@@ -784,9 +653,9 @@ class FunctionCommentSniff extends SquizFunctionCommentSniff
                 }
             }//end if
         }//end foreach
-    }//end processReturn()
+    }
 
-    /**
+        /**
      * Check if a comment has a valid 'inheritdoc' annotation.
      *
      * @param  File $phpcsFile
@@ -820,5 +689,48 @@ class FunctionCommentSniff extends SquizFunctionCommentSniff
         }
 
         return false;
+    }//end processReturn()
+
+    /**
+     * Get class parents and interfaces.
+     * Returns array of class and interface names or false if the class cannot be loaded.
+     *
+     * @return mixed[]|bool
+     *
+     * @throws \PHP_CodeSniffer\Exceptions\RuntimeException
+     */
+    private function getClassParentsAndInterfaces()
+    {
+        $phpcsFile = $this->phpcsFile;
+        $tokens = $phpcsFile->getTokens();
+        $nsStart = $phpcsFile->findNext(array(T_NAMESPACE), 0);
+        $class = '';
+
+        // Set the default return value.
+        $this->parentsAndInterfaces = false;
+
+        // Build the namespace.
+        if (false !== $nsStart) {
+            $nsEnd = $phpcsFile->findNext(array(T_SEMICOLON), $nsStart + 2);
+            for ($i = $nsStart + 2; $i < $nsEnd; $i++) {
+                $class .= $tokens[$i]['content'];
+            }
+            $class .= '\\';
+        } else {
+            $nsEnd = 0;
+        }
+
+        // Find the class/interface declaration.
+        $classPtr = $phpcsFile->findNext(array(T_CLASS, T_INTERFACE), $nsEnd);
+
+        if (false !== $classPtr) {
+            $class .= $phpcsFile->getDeclarationName($classPtr);
+
+            if (\class_exists($class) || \interface_exists($class)) {
+                $this->parentsAndInterfaces = \array_merge(\class_parents($class), \class_implements($class));
+            }
+        }
+
+        return $this->parentsAndInterfaces;
     }
 }

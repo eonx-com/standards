@@ -442,7 +442,7 @@ class FunctionCommentSniff extends SquizFunctionCommentSniff
                             $errorCode = 'Scalar' . $errorCode;
                         }
 
-                        $suppressName = 'EoneoPay.Commenting.FunctionComment' . $errorCode;
+                        $suppressName = 'EoneoPay.Commenting.FunctionComment.' . $errorCode;
                         if (SuppressHelper::isSniffSuppressed($phpcsFile, $stackPtr, $suppressName) === false) {
                             $phpcsFile->addError($error, $stackPtr, $errorCode, $data);
                         }

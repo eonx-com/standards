@@ -672,6 +672,12 @@ class FunctionCommentSniff extends SquizFunctionCommentSniff
         $commentString = $phpcsFile->getTokensAsString($commentStart, $commentEnd - $commentStart + 1);
 
         if (\preg_match('/\@inheritdoc/', $commentString)) {
+            // Ignore anonymous class for now
+            $tokens = $phpcsFile->getTokens();
+            if (\in_array(T_ANON_CLASS, $tokens[$commentStart]['conditions'] ?? [], true)) {
+                return true;
+            }
+
             $classes = $this->getClassParentsAndInterfaces();
 
             if (false !== $classes) {

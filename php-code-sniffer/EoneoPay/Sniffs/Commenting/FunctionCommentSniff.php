@@ -431,7 +431,7 @@ class FunctionCommentSniff extends SquizFunctionCommentSniff
             //$this->checkSpacingAfterParamName($phpcsFile, $param, $maxVar);
 
             // Param comments must start with a capital letter and end with the full stop.
-            if (\preg_match('/^(\p{Ll}|\P{L})/u', $param['comment']) === 1) {
+            if (\preg_match('/^(?=\p{Ll}|\P{L})(?=\D)/u', $param['comment']) === 1) {
                 $error = 'Parameter comment must start with a capital letter';
                 $phpcsFile->addError($error, $param['tag'], 'ParamCommentNotCapital');
             }

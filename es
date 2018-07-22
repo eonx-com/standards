@@ -48,24 +48,6 @@ PHPUNIT_TEST_DIRECTORY=${PHPUNIT_TEST_DIRECTORY:=tests}
 # Assume success
 exitcode=0
 
-# Display help
-display_help () {
-    echo -e "\033[0;33mUsage:\033[m"
-    echo -e "  ${0} [options]\n"
-    echo -e "\033[0;33mOptions:\033[m"
-    echo -e "\033[0;32m  -h, --help \033[m                   Display this help message"
-    echo -e "\033[0;32m  -e, --except[=TOOL,TOOL,...] \033[m Run all tools except the provided ones. Cannot be combined with --only, --only has priority"
-    echo -e "\033[0;32m  -o, --only[=TOOL,TOOL,...] \033[m   Run only the provided tools"
-    exit 0
-}
-
-# Display error for invalid tool
-display_invalid_tool () {
-    echo -e "\033[0;31m"
-    echo "Tool \"${1}\" does not exist. Valid tools: phpcpd (cpd), phpcs (cs), phpmd (md), phpstan (stan), phpunit (unit)"
-    exit 1
-}
-
 # Find executable
 resolve_executable () {
     # Prefer executable in vendor directory
@@ -78,114 +60,6 @@ resolve_executable () {
     fi
 
     return 1
-}
-
-# Parse options
-resolve_options () {
-    # Set default options values
-    EXCEPT=${EXCEPT:=""}
-    ONLY=${ONLY:=""}
-
-    for i in "$@"; do
-        case $i in
-            -e=*|--except=*)
-                EXCEPT="${i#*=}"
-                shift # past argument=value
-            ;;
-            -h|--help)
-                display_help
-            ;;
-            -o=*|--only=*)
-                ONLY="${i#*=}"
-                shift # past argument=value
-            ;;
-            *)
-                echo -e "\033[0;33m"
-                echo "Option \"${i}\" does not exist, ignore it..."
-                printf "\033[m\n"
-            ;;
-        esac
-    done
-}
-
-# Process option EXCEPT
-resolve_option_except () {
-    local IFS=','
-
-    # Early return if ONLY is empty
-    if [ -z "${1}" ]; then
-        return
-    fi
-
-    # Enable all tools
-    PHPCPD_ENABLED=true
-    PHPCS_ENABLED=true
-    PHPMD_ENABLED=true
-    PHPSTAN_ENABLED=true
-    PHPUNIT_ENABLED=true
-
-    for tool in ${1}; do
-        case $tool in
-            cpd|phpcpd)
-                PHPCPD_ENABLED=false
-            ;;
-            cs|phpcs)
-                PHPCS_ENABLED=false
-            ;;
-            md|phpmd)
-                PHPMD_ENABLED=false
-            ;;
-            stan|phpstan)
-                PHPSTAN_ENABLED=false
-            ;;
-            unit|phpunit)
-                PHPUNIT_ENABLED=false
-            ;;
-            *)
-                display_invalid_tool ${tool}
-            ;;
-        esac
-    done
-}
-
-# Process option ONLY
-resolve_option_only () {
-    local IFS=','
-
-    # Early return if ONLY is empty
-    if [ -z "${1}" ]; then
-        return
-    fi
-
-    # Disable all tools
-    PHPCPD_ENABLED=false
-    PHPCS_ENABLED=false
-    PHPMD_ENABLED=false
-    PHPSTAN_ENABLED=false
-    PHPUNIT_ENABLED=false
-
-    for tool in ${1}; do
-        case $tool in
-            cpd|phpcpd)
-                PHPCPD_ENABLED=true
-            ;;
-            cs|phpcs)
-                PHPCS_ENABLED=true
-            ;;
-            md|phpmd)
-                PHPMD_ENABLED=true
-            ;;
-            stan|phpstan)
-                PHPSTAN_ENABLED=true
-            ;;
-            unit|phpunit)
-                PHPUNIT_ENABLED=true
-            ;;
-            *)
-                display_invalid_tool ${tool}
-            ;;
-        esac
-    done
 }
 
 # Process paths
@@ -216,14 +90,10 @@ if [ -f "standards.cfg" ]; then
     set +a
 fi
 
-resolve_options "$@"
-resolve_option_except ${EXCEPT}
-resolve_option_only ${ONLY}
 resolve_paths ${PATHS}
 
 if [ ${#checks[@]} -lt 1 ]; then
-    echo -e "\033[0;31m"
-    echo "Paths specified in configuration file are invalid or could not be found"
+    echo "Paths specfiied in configuration file are invalid or could not be found"
     echo "PATHS=<path>,<path>,..."
     exit 1
 fi
@@ -289,7 +159,7 @@ if ${PHPUNIT_ENABLED}; then
     echo "Running phpunit..."
     # Make sure this can run
     if [ ! -f phpunit.xml ] && ([ ! -f vendor/autoload.php ] || [ ! -d ${PHPUNIT_TEST_DIRECTORY} ]); then
-        echo -e "\033[0;31mERROR: Can't run phpunit as phpunit.xml can't be loaded and vendor/autoload.php or tests directory is missing"
+        echo "ERROR: Can't run phpunit as phpunit.xml can't be loaded and vendor/autoload.php or tests directory is missing"
     else
         # Prefer paratest
         resolve_executable paratest
@@ -355,10 +225,10 @@ if ${PHPUNIT_ENABLED}; then
 fi
 
 if [ ${exitcode} -eq 0 ]; then
-    echo -e "\033[0;32m"
+    echo -e "\033[1;92m"
     echo "It all looks fine to me you fucking champion!"
 else
-    echo -e "\033[0;31m"
+    echo -e "\033[1;91m"
     echo -e "Oh you screwed up somewhere, go fix your errors"
 fi
 

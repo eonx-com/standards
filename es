@@ -43,6 +43,10 @@ PHPUNIT_JUNIT_LOG_PATH=${PHPUNIT_JUNIT_LOG_PATH:=}
 # The directory containing tests, will be ignored it phpunit.xml exists in working directory
 PHPUNIT_TEST_DIRECTORY=${PHPUNIT_TEST_DIRECTORY:=tests}
 
+########## SECURITY CHECKER CONFIGURATION ##########
+# Whether or not to run security-checker, will run if security-checker binary is found
+SECURITY_CHECKER_ENABLED=${SECURITY_CHECKER_ENABLED:=true}
+
 ### DO NOT EDIT BELOW THIS LINE ###
 
 # Assume success
@@ -221,6 +225,16 @@ if ${PHPUNIT_ENABLED}; then
                 fi
             fi
         fi
+    fi
+fi
+
+# Run security checker
+if ${SECURITY_CHECKER_ENABLED}; then
+    resolve_executable security-checker
+
+    if [ ${?} -eq 0 ]; then
+        echo "Running security-checker..."
+        results ${executable} security:check
     fi
 fi
 

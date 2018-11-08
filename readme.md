@@ -24,6 +24,7 @@ This library will automatically run the following packages if they are found on 
 | [PHP Mess Detector](https://phpmd.org) | Check coding best practices |
 | [PHPStan](https://github.com/phpstan/phpstan) | Static analysis of code to detect potential errors |
 | [PHPUnit](https://phpunit.de) | Run unit tests |
+| [Security Checker](https://security.symfony.com/) | Check project's dependencies for known vulnerabilities |
 
 ### Recommended extensions
 
@@ -88,6 +89,10 @@ PHPUNIT_COVERAGE_MINIMUM_LEVEL=90
 PHPUNIT_JUNIT_LOG_PATH=
 # The directory containing tests, will be ignored it phpunit.xml exists in working directory
 PHPUNIT_TEST_DIRECTORY=tests
+
+########## SECURITY CHECKER CONFIGURATION ##########
+# Whether or not to run security-checker, will run if security-checker binary is found
+SECURITY_CHECKER_ENABLED=true
 ```
 
 ### Tool configuration

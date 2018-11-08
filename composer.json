@@ -22,6 +22,7 @@
     "phpstan/phpstan": "Static analysis of code to detect potential errors",
     "phpunit/phpunit": "Run unit tests",
     "sebastian/phpcpd": "Detect code duplication",
+    "sensiolabs/security-checker": "Check project's dependencies for known vulnerabilities",
     "squizlabs/php_codesniffer": "Check code style"
   },
   "bin": [

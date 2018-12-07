@@ -80,6 +80,7 @@ resolve_paths () {
 
 # Set up results function
 results () {
+    echo ${@}
     results=$(${@})
     if [ ${?} -ne 0 ]; then
         exitcode=1
@@ -203,6 +204,7 @@ if ${PHPUNIT_ENABLED}; then
             fi
 
             # Run and capture result
+            echo ${phpunit_command}
             results=$(${phpunit_command})
             if [ ${?} -ne 0 ]; then
                 exitcode=1

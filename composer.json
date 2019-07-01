@@ -18,6 +18,7 @@
   "suggest": {
     "brianium/paratest": "Run unit tests in parallel",
     "ext-xdebug": "Calculate code coverage of unit tests",
+    "friendsofphp/php-cs-fixer": "Check and fix code style",
     "phpmd/phpmd": "Check coding best practices",
     "phpstan/phpstan": "Static analysis of code to detect potential errors",
     "phpunit/phpunit": "Run unit tests",

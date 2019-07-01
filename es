@@ -19,6 +19,10 @@ PHPCS_STANDARDS=${PHPCS_STANDARDS:=vendor/eoneopay/standards/php-code-sniffer/Eo
 # Whether to show the code sniffs name on report output
 PHPCS_SHOW_SNIFF_NAME=${PHPCS_SHOW_SNIFF_NAME:=true}
 
+########## PHP CS FIXER CONFIGURATION ##########
+# Whether or not to run php code sniffer, will run if phpcs binary is found
+PHPCS_FIXER_ENABLED=${PHPCS_FIXER_ENABLED:=true}
+
 ########## PHP MESS DETECTOR CONFIGURATION ##########
 # Whether or not to run php mess destector, will run if phpmd binary is found
 PHPMD_ENABLED=${PHPMD_ENABLED:=true}
@@ -127,6 +131,20 @@ if ${PHPCS_ENABLED}; then
             results ${executable} --colors ${checks} ${show_sniff_arg}
         else
             results ${executable} --standard=${PHPCS_STANDARDS} --colors --report=full ${checks} ${show_sniff_arg}
+        fi
+    fi
+fi
+
+# Run php-cs-fixer
+if ${PHPCSFIXER_ENABLED}; then
+    resolve_executable php-cs-fixer
+
+    if [ ${?} -eq 0 ]; then
+        echo "Running php cs fixer..."
+        if [ -f .php_cs ]; then
+            results ${executable} fix --dry-run --allow-risky=yes
+        else
+            results ${executable} fix --rules='@PSR2,trailing_comma_in_multiline_array' --dry-run --allow-risky=yes
         fi
     fi
 fi

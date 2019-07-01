@@ -22,6 +22,8 @@ PHPCS_SHOW_SNIFF_NAME=${PHPCS_SHOW_SNIFF_NAME:=true}
 ########## PHP CS FIXER CONFIGURATION ##########
 # Whether or not to run php code sniffer, will run if phpcs binary is found
 PHPCS_FIXER_ENABLED=${PHPCS_FIXER_ENABLED:=true}
+# Default rules to be used when no .php_cs file exists in the project
+PHPCS_FIXER_RULES=${PHPCS_FIXER_RULES:='@PSR2,trailing_comma_in_multiline_array'}
 
 ########## PHP MESS DETECTOR CONFIGURATION ##########
 # Whether or not to run php mess destector, will run if phpmd binary is found
@@ -142,9 +144,9 @@ if ${PHPCSFIXER_ENABLED}; then
     if [ ${?} -eq 0 ]; then
         echo "Running php cs fixer..."
         if [ -f .php_cs ]; then
-            results ${executable} fix --dry-run --allow-risky=yes
+            results ${executable} fix --dry-run --allow-risky=yes --verbose --show-progress=none
         else
-            results ${executable} fix --rules='@PSR2,trailing_comma_in_multiline_array' --dry-run --allow-risky=yes
+            results ${executable} fix --rules=${PHPCS_FIXER_RULES} --dry-run --allow-risky=yes --verbose --show-progress=none
         fi
     fi
 fi

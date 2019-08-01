@@ -114,7 +114,7 @@ if ${PHPCPD_ENABLED}; then
 
     if [ ${?} -eq 0 ]; then
         echo "Running php copy/paste detector..."
-        if [ -z ${PHPCPD_EXCLUDE_REGEX} ]
+        if [ -z ${PHPCPD_EXCLUDE_REGEX} ]; then
             results ${executable} --ansi --min-lines=${PHPCPD_MIN_LINES} --min-tokens=${PHPCPD_MIN_TOKENS} ${checks}
         else
             results ${executable} --ansi --min-lines=${PHPCPD_MIN_LINES} --min-tokens=${PHPCPD_MIN_TOKENS} --regexps-exclude="${PHPCPD_EXCLUDE_REGEX}" ${checks}

@@ -10,6 +10,8 @@ PHPCPD_ENABLED=${PHPCPD_ENABLED:=true}
 PHPCPD_MIN_LINES=${PHPCPD_MIN_LINES:=5}
 # The minimum number of duplicated tokens within a line to count as copy/paste
 PHPCPD_MIN_TOKENS=${PHPCPD_MIN_TOKENS:=70}
+# A comma seperated list of regexes to exclude from copy/paste
+PHPCPD_EXCLUDE_REGEX=${PHPCPD_EXCLUDE_REGEX:=""}
 
 ########## PHP CODE SNIFFER CONFIGURATION ##########
 # Whether or not to run php code sniffer, will run if phpcs binary is found
@@ -112,7 +114,11 @@ if ${PHPCPD_ENABLED}; then
 
     if [ ${?} -eq 0 ]; then
         echo "Running php copy/paste detector..."
-        results ${executable} --ansi --min-lines=${PHPCPD_MIN_LINES} --min-tokens=${PHPCPD_MIN_TOKENS} ${checks}
+        if [ -z ${PHPCPD_EXCLUDE_REGEX} ]
+            results ${executable} --ansi --min-lines=${PHPCPD_MIN_LINES} --min-tokens=${PHPCPD_MIN_TOKENS} ${checks}
+        else
+            results ${executable} --ansi --min-lines=${PHPCPD_MIN_LINES} --min-tokens=${PHPCPD_MIN_TOKENS} --regexps-exclude="${PHPCPD_EXCLUDE_REGEX}" ${checks}
+        fi
     fi
 fi
 

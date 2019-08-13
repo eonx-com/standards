@@ -34,7 +34,7 @@ PHPSTAN_ENABLED=${PHPSTAN_ENABLED:=true}
 PHPSTAN_REPORTING_LEVEL=${PHPSTAN_REPORTING_LEVEL:=7}
 
 ########## PHPUNIT CONFIGURATION ##########
-# Whether or not to run phpunit, will run if paratest or phpunit binary is found
+# Whether or not to run phpunit, will run if phpunit binary is found
 PHPUNIT_ENABLED=${PHPUNIT_ENABLED:=true}
 # Whether or not to enable code coverage checks
 PHPUNIT_ENABLE_CODE_COVERAGE=${PHPUNIT_ENABLE_CODE_COVERAGE:=true}
@@ -172,24 +172,13 @@ if ${PHPUNIT_ENABLED}; then
     if [ ! -f phpunit.xml ] && ([ ! -f vendor/autoload.php ] || [ ! -d ${PHPUNIT_TEST_DIRECTORY} ]); then
         echo "ERROR: Can't run phpunit as phpunit.xml can't be loaded and vendor/autoload.php or tests directory is missing"
     else
-        # Prefer paratest
-        resolve_executable paratest
+        resolve_executable phpunit
 
         if [ ${?} -eq 0 ]; then
             if [ -f phpunit.xml ]; then
-                phpunit_command="${executable} -p8 --runner=WrapperRunner --colors"
+                phpunit_command="${executable} --colors=always"
             else
-                phpunit_command="${executable} -p8 --runner=WrapperRunner --bootstrap=vendor/autoload.php --colors ${PHPUNIT_TEST_DIRECTORY}"
-            fi
-        else
-            resolve_executable phpunit
-
-            if [ ${?} -eq 0 ]; then
-                if [ -f phpunit.xml ]; then
-                    phpunit_command="${executable} --colors=always"
-                else
-                    phpunit_command="${executable} --bootstrap vendor/autoload.php --colors=always ${PHPUNIT_TEST_DIRECTORY}"
-                fi
+                phpunit_command="${executable} --bootstrap vendor/autoload.php --colors=always ${PHPUNIT_TEST_DIRECTORY}"
             fi
         fi
 

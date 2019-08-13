@@ -176,28 +176,28 @@ if ${PHPUNIT_ENABLED}; then
         resolve_executable paratest
 
         if [ ${?} -eq 0 ]; then
-            if [ -f phpunit.xml ]; then
-                phpunit_command="${executable} -p8 --runner=WrapperRunner --colors"
-            else
-                phpunit_command="${executable} -p8 --runner=WrapperRunner --bootstrap=vendor/autoload.php --colors ${PHPUNIT_TEST_DIRECTORY}"
-            fi
+            phpunit_command="${executable} --colors"
         else
             resolve_executable phpunit
 
             if [ ${?} -eq 0 ]; then
-                if [ -f phpunit.xml ]; then
-                    phpunit_command="${executable} --colors=always"
-                else
-                    phpunit_command="${executable} --bootstrap vendor/autoload.php --colors=always ${PHPUNIT_TEST_DIRECTORY}"
-                fi
+                phpunit_command="${executable} --colors=always"
             fi
         fi
 
+        # Only run phpunit if a command was found
         if [ ! -z ${phpunit_command+xxx} ]; then
+            # If phpunit doesn't exist, bootstrap to vendor
+            if [ -f phpunit.xml ]; then
+                phpunit_command="${phpunit_command} --configuration phpunit.xml"
+            else
+                phpunit_command="${phpunit_command} --bootstrap vendor/autoload.php ${PHPUNIT_TEST_DIRECTORY}"
+            fi
+
             # If coverage is enabled, add it
             if ${PHPUNIT_ENABLE_CODE_COVERAGE}; then
                 # Prefer running with phpdbg
-                if [ ! -z $(which phpdbg) ]; then
+                if [ ! -z $(which phpdbg) ] && [[ ${phpunit_command} != *"paratest"* ]]; then
                     phpunit_command="$(command -v phpdbg) -qrr ${phpunit_command#php } --coverage-text"
                 else
                     phpunit_command="${phpunit_command} --coverage-text"

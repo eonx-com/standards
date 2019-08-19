@@ -29,9 +29,13 @@
   "bin": [
     "es"
   ],
+  "autoload": {
+    "psr-4": {
+      "EoneoPay\\Standards\\Phpstan\\": "phpstan"
+    }
+  },
   "autoload-dev": {
     "psr-4": {
-      "EoneoPay\\Standards\\Phpstan\\": "phpstan",
       "Tests\\EoneoPay\\Standards\\CodeSniffer\\": "php-code-sniffer/EoneoPay/Tests",
       "Tests\\EoneoPay\\Standards\\": "tests"
     }

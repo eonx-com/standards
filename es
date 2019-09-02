@@ -144,7 +144,7 @@ if ${PHPCS_ENABLED}; then
 fi
 
 # Run php-cs-fixer
-if ${PHPCSFIXER_ENABLED}; then
+if ${PHPCS_FIXER_ENABLED}; then
     resolve_executable php-cs-fixer
 
     if [ ${?} -eq 0 ]; then

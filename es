@@ -3,6 +3,13 @@
 # Comma separated paths to files to check, absolute or relative to working directory
 PATHS=${PATHS:=app,src,tests}
 
+
+########## CHANGE DETECTION CONFIGURATION ##########
+# The primary branch for your repository which feature branches are merged into
+CD_PRIMARY_BRANCH=${CD_PRIMARY_BRANCH:=development}
+# Branches which a full scan of the paths above should be performed
+CD_FULL_SCAN_BRANCHES=${CD_FULL_SCAN_BRANCHES:=master,${CD_PRIMARY_BRANCH}}
+
 ########## PHP COPY/PASTE DETECTOR CONFIGURATION ##########
 # Whether or not to run php copy/paste detector, will run if phpcpd binary is found
 PHPCPD_ENABLED=${PHPCPD_ENABLED:=true}
@@ -46,10 +53,14 @@ PHPUNIT_ENABLED=${PHPUNIT_ENABLED:=true}
 PHPUNIT_ENABLE_CODE_COVERAGE=${PHPUNIT_ENABLE_CODE_COVERAGE:=true}
 # The minimum percentage of coverage to have, will be ignored if coverage check is disabled
 PHPUNIT_COVERAGE_MINIMUM_LEVEL=${PHPUNIT_COVERAGE_MINIMUM_LEVEL:=90}
+# The testsuites to run with coverage
+PHPUNIT_COVERAGE_TEST_SUITES=${PHPUNIT_COVERAGE_TEST_SUITES:=}
 # The path to output junit parseable log file, can be relative, will be ignored if left blank
 PHPUNIT_JUNIT_LOG_PATH=${PHPUNIT_JUNIT_LOG_PATH:=}
 # The directory containing tests, will be ignored it phpunit.xml exists in working directory
 PHPUNIT_TEST_DIRECTORY=${PHPUNIT_TEST_DIRECTORY:=tests}
+# The test suites to run, will run all tests if not specified
+PHPUNIT_TEST_SUITES=${PHPUNIT_TEST_SUITES:=}
 
 ########## SECURITY CHECKER CONFIGURATION ##########
 # Whether or not to run security-checker, will run if security-checker binary is found
@@ -59,6 +70,74 @@ SECURITY_CHECKER_ENABLED=${SECURITY_CHECKER_ENABLED:=true}
 
 # Assume success
 exitcode=0
+
+# Determine if this should be a full or partial scan
+determine_scan_type() {
+    local IFS=','
+
+    # Attempt to find git, only continue if git is executable and es is being run from inside a working directory
+    local git=$(command -v git)
+    if [ -z ${git} ] || [ ! -x ${git} ] || [[ $(${git} rev-parse --is-inside-work-tree 2>/dev/null) != "true" ]]; then
+        full_scan=true
+        return 0
+    fi
+
+    # If the current branch is a full scan branch, perform a don't detect changes
+    local current_branch=$(${git} rev-parse --abbrev-ref HEAD 2>/dev/null)
+    for branch in ${CD_FULL_SCAN_BRANCHES}; do
+        if [ ${current_branch} == ${branch} ]; then
+            full_scan=true
+            return 0
+        fi
+    done
+
+    # Should be good to do a partial check
+    full_scan=false
+}
+
+# Resolve checks
+resolve_checks () {
+    # Determine whether this is a full or partial scan
+    determine_scan_type
+
+    # If a partial scan is ok, attempt to build a list of changed files
+    checks=()
+    if [ ${full_scan} == false ]; then
+        local git=$(command -v git)
+        local current_branch=$(${git} rev-parse --abbrev-ref HEAD 2>/dev/null)
+        local printf=$(command -v printf)
+        local IFS=$'\n'
+
+        local vcs_changes=$(${git} diff --name-only ${current_branch} $(${git} merge-base ${current_branch} ${CD_PRIMARY_BRANCH}))
+
+        # If there are changes, get bash safe string and add to changeset
+        local changeset=""
+        for change in ${vcs_changes}; do
+            # Remove surrounding quotes
+            change=${change%\"}
+            change=${change#\"}
+
+            # Remove escaped quotes
+            change=${change//\\"/"}
+
+            # Only php files and only if the file still exists
+            if [ -f ${change} ] && [[ ${change} == *".php"* ]]; then
+                change=$(${printf} "%q" "${change}")
+                changeset+=("${change}")
+            fi
+        done
+
+        # If we have a changeset, set and return
+        if [ ${#changeset[@]} -gt 0 ]; then
+            checks=${changeset[@]}
+            return 0
+        fi
+    fi
+
+    # A partial scan wasn't done, so perform a full scan
+    resolve_paths
+    checks=${check_paths}
+}
 
 # Find executable
 resolve_executable () {
@@ -74,14 +153,15 @@ resolve_executable () {
     return 1
 }
 
-# Process paths
+# Resolve checkable paths
 resolve_paths () {
     local IFS=','
 
-    checks=()
+    # A partial scan wasn't done, so perform a full scan
+    check_paths=()
     for check in ${1}; do
         if [ -d "${check}" ] || [ -f "${check}" ]; then
-            checks+=("${check}")
+            check_paths+=("${check}")
         fi
     done
 }
@@ -103,6 +183,8 @@ if [ -f "standards.cfg" ]; then
     set +a
 fi
 
+# Resolve checks and paths
+resolve_checks
 resolve_paths ${PATHS}
 
 if [ ${#checks[@]} -lt 1 ]; then
@@ -111,8 +193,9 @@ if [ ${#checks[@]} -lt 1 ]; then
     exit 1
 fi
 
-# Combine directories into a single variable
+# Combine checks and paths into a single variable
 checks=${checks[@]}
+check_paths=${check_paths[@]}
 
 # Run phpcpd
 if ${PHPCPD_ENABLED}; then
@@ -121,9 +204,9 @@ if ${PHPCPD_ENABLED}; then
     if [ ${?} -eq 0 ]; then
         echo "Running php copy/paste detector..."
         if [ -z ${PHPCPD_EXCLUDE_REGEX} ]; then
-            results ${executable} --ansi --min-lines=${PHPCPD_MIN_LINES} --min-tokens=${PHPCPD_MIN_TOKENS} ${checks}
+            results ${executable} --ansi --min-lines=${PHPCPD_MIN_LINES} --min-tokens=${PHPCPD_MIN_TOKENS} ${check_paths}
         else
-            results ${executable} --ansi --min-lines=${PHPCPD_MIN_LINES} --min-tokens=${PHPCPD_MIN_TOKENS} --regexps-exclude="${PHPCPD_EXCLUDE_REGEX}" ${checks}
+            results ${executable} --ansi --min-lines=${PHPCPD_MIN_LINES} --min-tokens=${PHPCPD_MIN_TOKENS} --regexps-exclude="${PHPCPD_EXCLUDE_REGEX}" ${check_paths}
         fi
     fi
 fi
@@ -315,3 +398,5 @@ printf "\033[m\n"
 
 # If there was an error exit with error code
 exit ${exitcode}
+
+}

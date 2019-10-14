@@ -12,7 +12,7 @@ CD_FULL_SCAN_BRANCHES=${CD_FULL_SCAN_BRANCHES:=master,${CD_PRIMARY_BRANCH}}
 ########## PHP COPY/PASTE DETECTOR CONFIGURATION ##########
 # Whether or not to run php copy/paste detector, will run if phpcpd binary is found
 PHPCPD_ENABLED=${PHPCPD_ENABLED:=true}
-# A comma seperated list of regexes to exclude from copy/paste
+# A comma seperated list of regexes to exclude from copy/paste detection
 PHPCPD_EXCLUDE_REGEX=${PHPCPD_EXCLUDE_REGEX:=}
 # The minimum number of lines which need to be duplicated to count as copy/paste
 PHPCPD_MIN_LINES=${PHPCPD_MIN_LINES:=5}

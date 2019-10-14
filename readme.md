@@ -21,6 +21,7 @@ This library will automatically run the following packages if they are found on 
 | [Copy/Paste Detector](https://github.com/sebastianbergmann/phpcpd) | Detect code duplication |
 | [Paratest](https://github.com/paratestphp/paratest) | Run unit tests in parallel |
 | [PHP CodeSniffer](https://github.com/squizlabs/PHP_CodeSniffer) | Check code style |
+| [PHP CS Fixer](https://github.com/FriendsOfPHP/PHP-CS-Fixer) | Standardise code style |
 | [PHP Mess Detector](https://phpmd.org) | Check coding best practices |
 | [PHPStan](https://github.com/phpstan/phpstan) | Static analysis of code to detect potential errors |
 | [PHPUnit](https://phpunit.de) | Run unit tests |
@@ -50,9 +51,17 @@ You can fine tune the configuration by adding an `standards.cfg` file to the roo
 # Comma separated paths to files to check, absolute or relative to working directory
 PATHS=app,src,tests
 
+########## CHANGE DETECTION CONFIGURATION ##########
+# The primary branch for your repository which feature branches are merged into
+CD_PRIMARY_BRANCH=development
+# Branches which a full scan of the paths above should be performed
+CD_FULL_SCAN_BRANCHES=master,${CD_PRIMARY_BRANCH}
+
 ########## PHP COPY/PASTE DETECTOR CONFIGURATION ##########
 # Whether or not to run php copy/paste detector, will run if phpcpd binary is found
 PHPCPD_ENABLED=true
+# A comma seperated list of regexes to exclude from copy/paste detection
+PHPCPD_EXCLUDE_REGEX=
 # The minimum number of lines which need to be duplicated to count as copy/paste
 PHPCPD_MIN_LINES=5
 # The minimum number of duplicated tokens within a line to count as copy/paste
@@ -65,6 +74,12 @@ PHPCS_ENABLED=true
 PHPCS_STANDARDS=vendor/eoneopay/standards/php-code-sniffer/EoneoPay
 # Whether to show the code sniffs name on report output
 PHPCS_SHOW_SNIFF_NAME=true
+
+########## PHP CS FIXER CONFIGURATION ##########
+# Whether or not to run php code sniffer, will run if phpcs binary is found
+PHPCS_FIXER_ENABLED=true
+# Default rules to be used when no .php_cs file exists in the project
+PHPCS_FIXER_RULES='@PSR2,trailing_comma_in_multiline_array'
 
 ########## PHP MESS DETECTOR CONFIGURATION ##########
 # Whether or not to run php mess destector, will run if phpmd binary is found
@@ -85,10 +100,14 @@ PHPUNIT_ENABLED=true
 PHPUNIT_ENABLE_CODE_COVERAGE=true
 # The minimum percentage of coverage to have, will be ignored if coverage check is disabled
 PHPUNIT_COVERAGE_MINIMUM_LEVEL=90
+# The testsuites to run with coverage
+PHPUNIT_COVERAGE_TEST_SUITES=
 # The path to output junit parseable log file, can be relative, will be ignored if left blank
 PHPUNIT_JUNIT_LOG_PATH=
 # The directory containing tests, will be ignored it phpunit.xml exists in working directory
 PHPUNIT_TEST_DIRECTORY=tests
+# The test suites to run, will run all tests if not specified
+PHPUNIT_TEST_SUITES=
 
 ########## SECURITY CHECKER CONFIGURATION ##########
 # Whether or not to run security-checker, will run if security-checker binary is found
@@ -103,6 +122,7 @@ You can also configure individual tools by adding configuration files to the roo
 |---------|----------|
 | [Paratest](https://phpunit.de/manual/current/en/appendixes.configuration.html) | phpunit.xml |
 | [PHP CodeSniffer](https://github.com/squizlabs/PHP_CodeSniffer/wiki/Annotated-ruleset.xml) | phpcs.xml |
+| [PHP CS Fixer](https://github.com/FriendsOfPHP/PHP-CS-Fixer#usage) | .php_cs |
 | [PHP Mess Detector](https://phpmd.org/documentation/creating-a-ruleset.html) | phpmd.xml |
 | [PHPStan](https://github.com/phpstan/phpstan#configuration) | phpstan.neon |
 | [PHPUnit](https://phpunit.de/manual/current/en/appendixes.configuration.html) | phpunit.xml |

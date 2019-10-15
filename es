@@ -63,7 +63,7 @@ PHPUNIT_TEST_SUITES=${PHPUNIT_TEST_SUITES:=}
 
 ########## SECURITY CHECKER CONFIGURATION ##########
 # Whether or not to run security-checker, will run if security-checker binary is found
-SECURITY_CHECKER_ENABLED=${SECURITY_CHECKER_ENABLED:=true}
+SECURITY_CHECKER_ENABLED=${SECURITY_CHECKER_ENABLED:=false}
 
 ### DO NOT EDIT BELOW THIS LINE ###
 
@@ -235,7 +235,7 @@ function run_phpunit() {
         else
             phpunit_with_coverage "${command}"
         fi
-        
+
         return ${?}
     fi
 
@@ -461,7 +461,7 @@ function phpunit_without_coverage() {
     fi
 
     results ${command}
-    
+
     return ${?}
 }
 

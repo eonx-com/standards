@@ -70,6 +70,15 @@ SECURITY_CHECKER_ENABLED=${SECURITY_CHECKER_ENABLED:=false}
 # Assume success
 exitcode=0
 
+# Capture options
+while getopts "f" option; do
+    case ${option} in
+        f)
+            FORCE_FULL_SCAN=true
+        ;;
+    esac
+done
+
 ### FUNCTIONS FOR SPECIFIC CHECKS ###
 function run_phpcpd() {
     # If check is disabled, skip
@@ -265,7 +274,7 @@ function run_phpunit() {
                 phpunit_with_coverage "${command}" ${testsuite}
 
                 # Update return code
-                ((returncode+=${?}))
+                returncode=$((${returncode} + ${?}))
 
                 # Skip to next suite
                 continue 2
@@ -276,7 +285,7 @@ function run_phpunit() {
         phpunit_without_coverage "${command}" ${testsuite}
 
         # Update return code
-        ((returncode+=${?}))
+        returncode=$((${returncode} + ${?}))
     done
 
     return ${returncode}
@@ -309,7 +318,7 @@ function run_security() {
 ### FUNCTIONS FOR MISCELLANEOUS TASKS ###
 
 # Get the paths to check for a full scan
-function get_full_scan_paths () {
+function get_full_scan_paths() {
     local IFS=','
 
     # A partial scan wasn't done, so perform a full scan
@@ -332,7 +341,7 @@ function get_full_scan_paths () {
 }
 
 # Get the files to check for a partial scan
-function get_partial_scan_paths () {
+function get_partial_scan_paths() {
     # Use git to determine what files have changed, if git doesn't exist, abort
     local git=$(command -v git)
     if [ -z ${git} ] || [ ! -x ${git} ]; then
@@ -372,7 +381,7 @@ function get_partial_scan_paths () {
 }
 
 # Determine paths to check
-function get_paths () {
+function get_paths() {
     # Always perform a local scan if we can
     if [ $(should_perform_full_scan) == false ]; then
         local paths=$(get_partial_scan_paths)
@@ -393,7 +402,7 @@ function get_paths () {
 }
 
 # Run phpunit with coverage
-function phpunit_with_coverage () {
+function phpunit_with_coverage() {
     # Add coverage to command
     local command="${1} --coverage-text"
 
@@ -417,12 +426,12 @@ function phpunit_with_coverage () {
         echo "Running phpunit with coverage..."
     fi
 
-    echo "${command}"
     local IFS=' ';
     local results=$(${command})
 
     # If phpunit failed, abort since output will have been shown already
     if [ ${?} -ne 0 ]; then
+        echo "${command}"
         echo -e "\n${results}\n"
 
         return ${?}
@@ -466,7 +475,7 @@ function phpunit_without_coverage() {
 }
 
 # Find executable
-function resolve_executable () {
+function resolve_executable() {
     # Prefer executable in vendor directory
     local php=$(command -v php)
     if [ ! -z ${php} ] && [ -x ${php} ] && [ -f "vendor/bin/${1}" ]; then
@@ -483,37 +492,42 @@ function resolve_executable () {
 }
 
 # Run executable and capture results
-function results () {
+function results() {
     # Ensure we're using a space for parameters
     local IFS=' ';
 
     # Output command being run
-    echo ${@}
     results=$(${@})
+    local returncode=${?}
 
     # If there was an issue, display output
-    if [ ${?} -ne 0 ]; then
+    if [ ${returncode} -ne 0 ]; then
+        echo ${@}
         echo -e "\n${results}\n"
 
-        return ${?}
+        return ${returncode}
     fi
 
     return 0
 }
 
 # Run a command and update exit code
-function run () {
+function run() {
     run_${1}
 
     # Update exit code with return
-    ((exitcode+=${?}))
-
-    # Add a line break between tests
-    echo ""
+    exitcode=$((${exitcode} + ${?}))
 }
 
 # Determine if a full scan is needed
 function should_perform_full_scan() {
+    # If a full scan is forced, return
+    if [ ${FORCE_FULL_SCAN:=false} == true ]; then
+        echo true
+
+        return 0
+    fi
+
     local IFS=','
 
     # Attempt to find git, only continue if git is executable and es is being run from inside a working directory

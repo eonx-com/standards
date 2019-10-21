@@ -41,7 +41,13 @@ You can simply run `es` from the vendor directory to check your code base, any p
 
     bash vendor/bin/es
     
-Any php files in the `app/`, `src/` or `tests/` directories of your application or library will be checked by default.
+Any php files in the `app/`, `src/` or `tests/` directories of your application or library will be checked by default. If change detection is used a partial scan will be performed where possible.
+
+### Forcing a full scan
+
+You may want to run a full scan while using change detection. You can pass the `-f` flag to force a full scan.
+
+    bash vendor/bin/es -f
 
 ## Configuration
 

@@ -257,17 +257,8 @@ function run_phpunit() {
 
     # Run each test suite, only run coverage where needed
     local IFS=','
-    local previous_suite=''
     local returncode=0
     for testsuite in ${PHPUNIT_TEST_SUITES}; do
-        # If this isn't the first suite, add spacing
-        if [ ! -z ${previous_suite} ]; then
-            echo ""
-        fi
-
-        # Record test suite
-        previous_suite=${testsuite}
-
         for covered in ${PHPUNIT_COVERAGE_TEST_SUITES}; do
             if [ ${testsuite} == ${covered} ]; then
                 # Run with coverage
@@ -566,6 +557,9 @@ run phpmd
 run phpstan
 run phpunit
 run security
+
+# Add a line break before outcome
+echo ""
 
 # Done son
 if [ ${exitcode} -eq 0 ]; then

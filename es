@@ -316,8 +316,8 @@ function get_full_scan_paths() {
     local paths=()
     for check in ${PATHS}; do
         # Only add file/directory if it's legit
-        if [ -d "${check}" ] || [ -f "${check}" ]; then
-            paths+=("${check}")
+        if [ -d "${PWD}/${check}" ] || [ -f "${PWD}/${check}" ]; then
+            paths+=("${PWD}/${check}")
         fi
     done
 
@@ -550,6 +550,13 @@ if [ -f "standards.cfg" ]; then
     set +a
 fi
 
+# Output the type of scan being performed
+if [ $(should_perform_full_scan) == false ] && [[ $(get_paths) != $(get_full_scan_paths) ]]; then
+    echo -e "\033[1;34mPerforming a partial scan...\033[m\n"
+else
+    echo -e "\033[1;34mPerforming a full scan...\033[m\n"
+fi
+
 # Run checks
 run phpcpd
 run phpcs
@@ -557,9 +564,6 @@ run phpmd
 run phpstan
 run phpunit
 run security
-
-# Add a line break before outcome
-echo ""
 
 # Done son
 if [ ${exitcode} -eq 0 ]; then

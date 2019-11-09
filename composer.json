@@ -1,5 +1,5 @@
 {
-  "name": "eoneopay/standards",
+  "name": "eonx-com/standards",
   "description": "Library for enforcing EoneoPay coding standards against a code base",
   "keywords": [
     "eoneopay",
@@ -15,6 +15,9 @@
     "phpunit/phpunit": "^7.0",
     "squizlabs/php_codesniffer": "^3.0",
     "phpstan/phpstan": "^0.11.13"
+  },
+  "replace": {
+    "eoneopay/standards": "*"
   },
   "suggest": {
     "brianium/paratest": "Run unit tests in parallel",

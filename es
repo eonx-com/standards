@@ -23,7 +23,7 @@ PHPCPD_MIN_TOKENS=${PHPCPD_MIN_TOKENS:=70}
 # Whether or not to run php code sniffer, will run if phpcs binary is found
 PHPCS_ENABLED=${PHPCS_ENABLED:=true}
 # The standards to compare code against, will be ignored if phpcs.xml exists
-PHPCS_STANDARDS=${PHPCS_STANDARDS:=vendor/eoneopay/standards/php-code-sniffer/EoneoPay}
+PHPCS_STANDARDS=${PHPCS_STANDARDS:=vendor/eonx-com/standards/php-code-sniffer/EoneoPay}
 # Whether to show the code sniffs name on report output
 PHPCS_SHOW_SNIFF_NAME=${PHPCS_SHOW_SNIFF_NAME:=true}
 

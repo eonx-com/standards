@@ -6,7 +6,7 @@ This library provides the tools required to check a codebase against the EoneoPa
 
 This library is installed via composer:
 
-    composer require --dev eoneopay/standards dev-master
+    composer require --dev eonx-com/standards dev-master
     
 ### Requirements
 
@@ -48,6 +48,12 @@ Any php files in the `app/`, `src/` or `tests/` directories of your application 
 You may want to run a full scan while using change detection. You can pass the `-f` flag to force a full scan.
 
     bash vendor/bin/es -f
+
+### Running a verbose scan
+
+You may want to run a scan which shows all actions taken and their outcomes. You can pass the `-v` flag to force a verbose scan.
+
+    bash vendor/bin/es -v
 
 ## Configuration
 

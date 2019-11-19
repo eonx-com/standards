@@ -71,10 +71,14 @@ SECURITY_CHECKER_ENABLED=${SECURITY_CHECKER_ENABLED:=false}
 exitcode=0
 
 # Capture options
-while getopts "f" option; do
+while getopts "fv" option; do
     case ${option} in
         f)
             FORCE_FULL_SCAN=true
+        ;;
+
+        v)
+            VERBOSE_SCAN=true
         ;;
     esac
 done
@@ -421,7 +425,7 @@ function phpunit_with_coverage() {
     local results=$(${command})
 
     # If phpunit failed, abort since output will have been shown already
-    if [ ${?} -ne 0 ]; then
+    if [ ${?} -ne 0 ] || [ ${VERBOSE_SCAN:=false} == true ]; then
         echo "${command}"
         echo -e "\n${results}\n"
 
@@ -491,8 +495,8 @@ function results() {
     results=$(${@})
     local returncode=${?}
 
-    # If there was an issue, display output
-    if [ ${returncode} -ne 0 ]; then
+    # If there was an issue or the scan is verbose, display output
+    if [ ${returncode} -ne 0 ] || [ ${VERBOSE_SCAN:=false} == true ]; then
         echo ${@}
         echo -e "\n${results}\n"
 

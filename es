@@ -5,9 +5,9 @@ PATHS=${PATHS:=app,src,tests}
 
 ########## CHANGE DETECTION CONFIGURATION ##########
 # The primary branch for your repository which feature branches are merged into
-CD_PRIMARY_BRANCH=${CD_PRIMARY_BRANCH:=development}
+CD_PRIMARY_BRANCH=${CD_PRIMARY_BRANCH:=master}
 # Branches which a full scan of the paths above should be performed
-CD_FULL_SCAN_BRANCHES=${CD_FULL_SCAN_BRANCHES:=master,${CD_PRIMARY_BRANCH}}
+CD_FULL_SCAN_BRANCHES=${CD_FULL_SCAN_BRANCHES:=${CD_PRIMARY_BRANCH}}
 
 ########## PHP COPY/PASTE DETECTOR CONFIGURATION ##########
 # Whether or not to run php copy/paste detector, will run if phpcpd binary is found
@@ -42,8 +42,8 @@ PHPMD_RULESETS=${PHPMD_RULESETS:=cleancode,codesize,controversial,design,naming,
 ########## PHPSTAN CONFIGURATION ##########
 # Whether or not to run phpstan, will run if phpstan binary is found
 PHPSTAN_ENABLED=${PHPSTAN_ENABLED:=true}
-# The reporting level, 1 = loose, 7 = strict
-PHPSTAN_REPORTING_LEVEL=${PHPSTAN_REPORTING_LEVEL:=7}
+# The reporting level, 1 = loose, 8 = strict
+PHPSTAN_REPORTING_LEVEL=${PHPSTAN_REPORTING_LEVEL:=8}
 
 ########## PHPUNIT CONFIGURATION ##########
 # Whether or not to run phpunit, will run if phpunit binary is found

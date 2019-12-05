@@ -6,7 +6,7 @@ PATHS=${PATHS:=app,src,tests}
 ########## CHANGE DETECTION CONFIGURATION ##########
 # The primary branch for your repository which feature branches are merged into
 CD_PRIMARY_BRANCH=${CD_PRIMARY_BRANCH:=master}
-# Branches which a full scan of the paths above should be performed
+# A comma separate list of branches which a full scan of the paths above should be performed
 CD_FULL_SCAN_BRANCHES=${CD_FULL_SCAN_BRANCHES:=${CD_PRIMARY_BRANCH}}
 
 ########## PHP COPY/PASTE DETECTOR CONFIGURATION ##########

@@ -5,9 +5,9 @@ PATHS=${PATHS:=app,src,tests}
 
 ########## CHANGE DETECTION CONFIGURATION ##########
 # The primary branch for your repository which feature branches are merged into
-CD_PRIMARY_BRANCH=${CD_PRIMARY_BRANCH:=development}
+CD_PRIMARY_BRANCH=${CD_PRIMARY_BRANCH:=master}
 # Branches which a full scan of the paths above should be performed
-CD_FULL_SCAN_BRANCHES=${CD_FULL_SCAN_BRANCHES:=master,${CD_PRIMARY_BRANCH}}
+CD_FULL_SCAN_BRANCHES=${CD_FULL_SCAN_BRANCHES:=${CD_PRIMARY_BRANCH}}
 
 ########## PHP COPY/PASTE DETECTOR CONFIGURATION ##########
 # Whether or not to run php copy/paste detector, will run if phpcpd binary is found

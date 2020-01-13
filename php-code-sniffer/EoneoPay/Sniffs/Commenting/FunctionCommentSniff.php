@@ -344,7 +344,7 @@ class FunctionCommentSniff extends SquizFunctionCommentSniff
                 }//end if
             }//end foreach
 
-            $suggestedType = \implode($suggestedTypeNames, '|');
+            $suggestedType = \implode('|', $suggestedTypeNames);
             if ($param['type'] !== $suggestedType) {
                 $error = 'Expected "%s" but found "%s" for parameter type';
                 $data = [
@@ -638,7 +638,7 @@ class FunctionCommentSniff extends SquizFunctionCommentSniff
                     }
 
                     // Starts with a capital letter and ends with a full stop.
-                    $firstChar = $comment{0};
+                    $firstChar = $comment[0];
                     if (\strtoupper($firstChar) !== $firstChar) {
                         $error = '@throws tag comment must start with a capital letter';
                         $phpcsFile->addError($error, $tag + 2, 'ThrowsNotCapital');

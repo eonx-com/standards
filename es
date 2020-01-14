@@ -43,7 +43,7 @@ PHPMD_RULESETS=${PHPMD_RULESETS:=cleancode,codesize,controversial,design,naming,
 # Whether or not to run phpstan, will run if phpstan binary is found
 PHPSTAN_ENABLED=${PHPSTAN_ENABLED:=true}
 # The reporting level, 1 = loose, 8 = strict
-PHPSTAN_REPORTING_LEVEL=${PHPSTAN_REPORTING_LEVEL:=8}
+PHPSTAN_REPORTING_LEVEL=${PHPSTAN_REPORTING_LEVEL:=max}
 
 ########## PHPUNIT CONFIGURATION ##########
 # Whether or not to run phpunit, will run if phpunit binary is found
